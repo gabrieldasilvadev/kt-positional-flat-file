@@ -53,10 +53,10 @@ class PositionalFileGenerator() {
                         fieldValue = localDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
                     }
 
-                    if (!uppercase) {
-                        fieldValue = fieldValue.lowercase()
+                    fieldValue = if (!uppercase) {
+                        fieldValue.lowercase()
                     } else {
-                        fieldValue = fieldValue.uppercase()
+                        fieldValue.uppercase()
                     }
 
                     if (mask.isNotEmpty()) {
