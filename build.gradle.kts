@@ -12,7 +12,6 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.ffpojo:ffpojo:1.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.21")
     testImplementation(kotlin("test"))
 }
@@ -32,3 +31,4 @@ publishing {
         }
     }
 }
+
