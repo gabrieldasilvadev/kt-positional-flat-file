@@ -6,9 +6,7 @@ import enums.PaddingAlign
 @Retention(AnnotationRetention.RUNTIME)
 annotation class PositionalField(
     val position: Int,
-    val positionStart: Int,
-    val positionEnd: Int,
-    val length: Int,
+    val size: Int,
     val regex: String = "",
     val paddingAlign: PaddingAlign = PaddingAlign.LEFT,
     val mask: String = "",

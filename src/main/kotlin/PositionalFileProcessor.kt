@@ -31,9 +31,7 @@ class PositionalFileGenerator() {
             if (positionalFieldAnnotation != null) {
                 property.isAccessible = true
                 var fieldValue = property.get(data)?.toString() ?: ""
-                val positionStart = positionalFieldAnnotation.positionStart
-                val positionEnd = positionalFieldAnnotation.positionEnd
-                val length = positionalFieldAnnotation.length
+                val length = positionalFieldAnnotation.size
                 val paddingChar = positionalFieldAnnotation.paddingChar
                 val mask = positionalFieldAnnotation.mask
                 val fractionalDigits = positionalFieldAnnotation.fractionalDigits
@@ -78,13 +76,7 @@ class PositionalFileGenerator() {
                     PaddingAlign.RIGHT -> valueNew.padStart(length, paddingChar)
                 }
 
-                val truncatedValue = if (positionStart >= 0 && positionEnd <= formattedValue.length) {
-                    formattedValue.substring(positionStart, positionEnd)
-                } else {
-                    formattedValue
-                }
-
-                stringBuilder.append(truncatedValue)
+                stringBuilder.append(formattedValue)
             }
         }
 
