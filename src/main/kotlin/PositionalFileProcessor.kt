@@ -35,7 +35,7 @@ class PositionalFileGenerator() {
                 val paddingChar = positionalFieldAnnotation.paddingChar
                 val mask = positionalFieldAnnotation.mask
                 val fractionalDigits = positionalFieldAnnotation.fractionalDigits
-                val uppercase = positionalFieldAnnotation.uppercase
+                val uppercase = positionalFieldAnnotation.upperCase
                 val align = positionalFieldAnnotation.paddingAlign
                 val regex = positionalFieldAnnotation.regex
 

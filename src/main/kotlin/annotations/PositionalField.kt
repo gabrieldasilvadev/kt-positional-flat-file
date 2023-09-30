@@ -11,6 +11,6 @@ annotation class PositionalField(
     val paddingAlign: PaddingAlign = PaddingAlign.LEFT,
     val mask: String = "",
     val fractionalDigits: Int = 0,
-    val uppercase: Boolean = true,
+    val upperCase: Boolean = true,
     val paddingChar: Char = ' '
 )
