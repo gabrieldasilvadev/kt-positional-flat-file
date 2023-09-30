@@ -1,5 +1,5 @@
 import annotations.PositionalField
-import com.github.ffpojo.metadata.positional.PaddingAlign
+import enums.PaddingAlign
 import extensions.removeDotAndComma
 import java.math.BigDecimal
 import java.time.LocalDate

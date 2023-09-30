@@ -1,6 +1,6 @@
 package annotations
 
-import com.github.ffpojo.metadata.positional.PaddingAlign
+import enums.PaddingAlign
 
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
