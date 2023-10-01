@@ -1,23 +1,32 @@
 import annotations.PositionalField
 import enums.PaddingAlign
+import exceptions.InvalidFieldSizeException
+import exceptions.MandatoryException
 import extensions.removeDotAndComma
+import extensions.unaccented
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.min
 
 @Suppress("CAST_NEVER_SUCCEEDS")
 class PositionalFileGenerator() {
-    fun <T : Any> generateFile(data: List<T>): ByteArray {
-        val lines = mutableListOf<String>()
+    fun <T : Any> generateFile(data: List<T>, batchSize: Int? = null): ByteArray {
+        val concatenatedLines = StringBuilder()
+        val batchSizeFinal = batchSize ?: BATCH_SIZE_DEFAULT
+        val totalBatches = (data.size + batchSizeFinal - 1) / batchSizeFinal
 
-        for (item in data) {
-            val line = generatePositionalLine(item)
-            lines.add(line)
+        for (batchIndex in 0..<totalBatches) {
+            val start = batchIndex * batchSizeFinal
+            val end = min(start + batchSizeFinal, data.size)
+
+            for (index in start..<end) {
+                val line = generatePositionalLine(data[index])
+                concatenatedLines.append(line).append('\n')
+            }
         }
 
-        val concatenatedLines = lines.joinToString("\n")
-
-        return stringToByteArray(concatenatedLines)
+        return stringToByteArray(concatenatedLines.toString())
     }
 
     private fun <T : Any> generatePositionalLine(data: T): String {
@@ -38,15 +47,22 @@ class PositionalFileGenerator() {
                 val uppercase = positionalFieldAnnotation.upperCase
                 val align = positionalFieldAnnotation.paddingAlign
                 val regex = positionalFieldAnnotation.regex
+                val mandatory = positionalFieldAnnotation.mandatory
 
-                val regexToValidateIfFieldIsLocalDate = """^\d{4}-\d{2}-\d{2}$"""
+                val regexToValidateFieldIsLocalDate = """^\d{4}-\d{2}-\d{2}$""".toRegex()
+                val regexToValidateFieldIsMoney = """^\d{1,3}(\.\d+)${'$'}""".toRegex()
+
+                if (mandatory && fieldValue.isBlank()) {
+                    throw MandatoryException(property.name)
+                }
 
                 val valueNew: String = buildString {
+
                     if (regex.isNotEmpty()) {
                         fieldValue = fieldValue.replace(Regex(regex), "")
                     }
 
-                    if (fieldValue.matches(Regex(regexToValidateIfFieldIsLocalDate))) {
+                    if (fieldValue.matches(regexToValidateFieldIsLocalDate)) {
                         val localDate = LocalDate.parse(fieldValue, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                         fieldValue = localDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
                     }
@@ -62,21 +78,33 @@ class PositionalFileGenerator() {
                         fieldValue = fieldValue.format(mask)
                     }
 
+                    if (fieldValue.matches(regexToValidateFieldIsMoney)) {
+                        fieldValue = fieldValue.removeDotAndComma()
+                    }
+
                     if (fractionalDigits > 0) {
-                        val value = BigDecimal(fieldValue)
-                        fieldValue = String.format("%.${fractionalDigits}f", value).removeDotAndComma()
+                        if (fieldValue.isNotBlank()) {
+                            val value = BigDecimal(fieldValue)
+                            fieldValue = String.format("%.${fractionalDigits}f", value).removeDotAndComma()
+                        }
                     }
 
                     append(fieldValue)
                 }
-
 
                 val formattedValue = when (align) {
                     PaddingAlign.LEFT -> valueNew.padEnd(length, paddingChar)
                     PaddingAlign.RIGHT -> valueNew.padStart(length, paddingChar)
                 }
 
-                stringBuilder.append(formattedValue)
+                if (length > 0 && formattedValue.length != length) {
+                    throw InvalidFieldSizeException(
+                        property.name,
+                        length,
+                        length
+                    )
+                }
+                stringBuilder.append(formattedValue.unaccented())
             }
         }
 
@@ -84,6 +112,8 @@ class PositionalFileGenerator() {
     }
 
     private fun stringToByteArray(inputString: String) = inputString.toByteArray(Charsets.UTF_8)
+
+    companion object {
+        const val BATCH_SIZE_DEFAULT = 10_000
+    }
 }
-
-
