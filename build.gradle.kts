@@ -8,7 +8,7 @@ plugins {
     `maven-publish`
 }
 
-group = "com.gabrieldasilvadev.ktpositionalflatfile"
+group = "io.github.gabrieldasilvadev"
 version = "1.0.0"
 
 repositories {
