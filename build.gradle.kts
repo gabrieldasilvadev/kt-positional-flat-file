@@ -5,12 +5,12 @@ plugins {
     kotlin("jvm") version "1.9.0"
     id("org.jreleaser") version "1.8.0"
     application
-    `signing`
+    signing
     `maven-publish`
 }
 
 group = "com.github.gabrieldasilvadev"
-version = "1.0.0"
+version = "1.0.6"
 
 repositories {
     mavenCentral()
