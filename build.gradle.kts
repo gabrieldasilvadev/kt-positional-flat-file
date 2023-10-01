@@ -8,7 +8,7 @@ plugins {
     `maven-publish`
 }
 
-group = "io.github.gabrieldasilvadev"
+group = "com.github.gabrieldasilvadev"
 version = "1.0.0"
 
 repositories {
@@ -52,45 +52,23 @@ jreleaser {
     }
 }
 
-publishing{
+publishing {
     publications {
         create<MavenPublication>("Maven") {
             from(components["kotlin"])
-            groupId = "com.gabrieldasilvadev"
+            groupId = "com.github.gabrieldasilvadev"
             artifactId = "kotlin-positional-flat-file"
             description = "Generate Positional files with kotlin"
-        }
-        withType<MavenPublication> {
-            pom {
-                packaging = "jar"
-                name.set("kotlin-positional-flat-file")
-                description.set("Generate Positional files with kotlin")
-                url.set("https://github.com/gabrieldasilvadev/kt-positional-flat-file/")
-                inceptionYear.set("2023")
-                licenses {
-                    license {
-                        name.set("MIT license")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("gabrieldasilvadev")
-                        name.set("Gabriel da Silva")
-                        email.set("gabrieldasilvadev@gmail.com")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git@github.com:gabrieldasilvadev/kt-positional-flat-file.git")
-                    developerConnection.set("scm:git:ssh:git@github.com:gabrieldasilvadev/kt-positional-flat-file.git")
-                    url.set("https://github.com/gabrieldasilvadev/kt-positional-flat-file")
-                }
-            }
         }
     }
     repositories {
         maven {
-            url = layout.buildDirectory.dir("staging-deploy").get().asFile.toURI()
+            name = "GitHubPackages"
+            url = url.resolve("https://maven.pkg.github.com/gabrieldasilvadev/kt-positional-flat-file")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }
