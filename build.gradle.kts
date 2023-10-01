@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.gabrieldasilvadev.ktpositionalflatfile"
-version = "v1.0.0"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
