@@ -1,3 +1,4 @@
+import java.net.URI
 import org.jreleaser.model.Active
 
 plugins {
@@ -64,7 +65,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = url.resolve("https://maven.pkg.github.com/gabrieldasilvadev/kt-positional-flat-file")
+            url = URI.create("https://maven.pkg.github.com/gabrieldasilvadev/kt-positional-flat-file")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
