@@ -10,7 +10,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.min
 
-@Suppress("CAST_NEVER_SUCCEEDS")
 class PositionalFileGenerator() {
     fun <T : Any> generateFile(data: List<T>, batchSize: Int? = null): ByteArray {
         val concatenatedLines = StringBuilder()
@@ -75,8 +74,8 @@ class PositionalFileGenerator() {
                     }
 
                     if (mask.isNotEmpty()) {
-                        fieldValue as LocalDate
-                        fieldValue = fieldValue.format(mask)
+                        val localDate = LocalDate.parse(fieldValue, DateTimeFormatter.ofPattern("yyyyMMdd"))
+                        fieldValue = localDate.format(DateTimeFormatter.ofPattern(mask))
                     }
 
                     if (fractionalDigits > 0) {
