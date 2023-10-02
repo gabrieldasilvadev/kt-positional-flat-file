@@ -5,6 +5,7 @@ import exceptions.MandatoryException
 import extensions.removeDotAndComma
 import extensions.unaccented
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.min
@@ -78,23 +79,32 @@ class PositionalFileGenerator() {
                         fieldValue = fieldValue.format(mask)
                     }
 
+                    if (fractionalDigits > 0) {
+                        if (fieldValue.isNotBlank()) {
+                            val value = BigDecimal(fieldValue)
+                            val scale = value.scale()
+                            val zerosToAdd = fractionalDigits - scale
+
+                            fieldValue = if (zerosToAdd > 0) {
+                                val scaledValue = value.setScale(fractionalDigits, RoundingMode.HALF_UP)
+                                scaledValue.toString().replace(".", "").removeDotAndComma()
+                            } else {
+                                fieldValue.removeDotAndComma()
+                            }
+                        }
+                    }
+
                     if (fieldValue.matches(regexToValidateFieldIsMoney)) {
                         fieldValue = fieldValue.removeDotAndComma()
                     }
 
-                    if (fractionalDigits > 0) {
-                        if (fieldValue.isNotBlank()) {
-                            val value = BigDecimal(fieldValue)
-                            fieldValue = String.format("%.${fractionalDigits}f", value).removeDotAndComma()
-                        }
-                    }
 
-                    append(fieldValue)
+                    append(fieldValue.take(length))
                 }
 
                 val formattedValue = when (align) {
-                    PaddingAlign.LEFT -> valueNew.padEnd(length, paddingChar)
-                    PaddingAlign.RIGHT -> valueNew.padStart(length, paddingChar)
+                    PaddingAlign.END -> valueNew.padEnd(length, paddingChar)
+                    PaddingAlign.START -> valueNew.padStart(length, paddingChar)
                 }
 
                 if (length > 0 && formattedValue.length != length) {

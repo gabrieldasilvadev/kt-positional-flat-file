@@ -8,7 +8,7 @@ annotation class PositionalField(
     val position: Int,
     val size: Int,
     val regex: String = "",
-    val paddingAlign: PaddingAlign = PaddingAlign.LEFT,
+    val paddingAlign: PaddingAlign = PaddingAlign.END,
     val mask: String = "",
     val fractionalDigits: Int = 0,
     val upperCase: Boolean = true,
