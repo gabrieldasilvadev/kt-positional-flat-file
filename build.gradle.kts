@@ -1,16 +1,15 @@
-import java.net.URI
-import java.util.Base64
 import org.jreleaser.model.Active
 
 plugins {
     kotlin("jvm") version "1.9.0"
     id("org.jreleaser") version "1.8.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     application
     signing
     `maven-publish`
 }
 
-group = "com.github.gabrieldasilvadev"
+group = "io.github.gabrieldasilvadev"
 version = "1.1.0"
 
 repositories {
@@ -21,61 +20,55 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.21")
     testImplementation(kotlin("test"))
 }
-publishing {
-    repositories.maven("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        name = "OSSRH"
 
-        credentials {
-            username = System.getenv("OSSRH_USER")
-            password = System.getenv("OSSRH_KEY")
-        }
-    }
+publishing {
     publications {
-        register("mavenJava", MavenPublication::class) {
-            from(components["java"])
+        create<MavenPublication>("mavenJava") {
             pom {
                 name.set("Kotlin Positional Flat File")
-                description.set("Lib for generate positional txt file")
+                description.set("The positional text file creation library is a tool that streamlines the generation of files where data is organized in fixed fields, occupying specific positions. It enables you to define layouts, insert data, apply validations, and efficiently write files, making it valuable for developers who need to create this type of file accurately and quickly.")
                 url.set("https://github.com/gabrieldasilvadev/kt-positional-flat-file")
-//                licenses {
-//                    license {
-//                        name.set("Apache-2.0")
-//                        distribution.set("repo")
-//                        url.set("")
-//                    }
-//                }
-
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
                 developers {
                     developer {
                         id.set("gabrieldasilvadev")
-                        name.set("Gabriel da Silva")
+                        name.set("Gabriel Da Silva")
                         email.set("gabrieldasilvadev@gmail.com")
                     }
                 }
-
                 scm {
                     connection.set("scm:git:ssh://github.com/gabrieldasilvadev/kt-positional-flat-file.git")
                     developerConnection.set("scm:git:ssh://github.com/gabrieldasilvadev/kt-positional-flat-file.git")
-                    url.set("https://github.com/gabrieldasilvadev/kt-positional-flat-file")
+                    url.set("https://github.com/gabrieldasilvadev/kt-positional-flat-file/")
                 }
             }
         }
     }
 }
 
-signing {
-    val signingKeyId: String? = System.getenv("SIGNING_KEY_ID")
-    val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
-    val signingKey: String? = System.getenv("SIGNING_KEY")?.let { base64Key ->
-        String(Base64.getDecoder().decode(base64Key))
-    }
-
-    if (signingKeyId != null) {
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        sign(publishing.publications)
+tasks.javadoc {
+    task("javadocJar", type = Jar::class) {
+        archiveClassifier.set("javadoc")
+        from(tasks.javadoc.get().destinationDir)
     }
 }
 
+tasks.kotlinSourcesJar {
+    archiveClassifier.set("sources")
+    from(kotlin.sourceSets.getByName("main"))
+}
+artifacts {
+    archives(tasks.kotlinSourcesJar.get())
+}
+
+signing {
+    sign(publishing.publications.getByName("mavenJava"))
+}
 
 tasks.test {
     useJUnitPlatform()
@@ -104,27 +97,6 @@ jreleaser {
                     releaseRepository.set(true)
                     stagingRepositories.add("build/staging-deploy")
                 }
-            }
-        }
-    }
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("Maven") {
-            from(components["kotlin"])
-            groupId = "com.github.gabrieldasilvadev"
-            artifactId = "kotlin-positional-flat-file"
-            description = "Generate Positional files with kotlin"
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = URI.create("https://maven.pkg.github.com/gabrieldasilvadev/kt-positional-flat-file")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }
