@@ -11,7 +11,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.min
 
-class PositionalFileGenerator() {
+class PositionalFileGenerator {
     companion object {
         private const val BATCH_SIZE_DEFAULT = 10_000
         fun <T : Any> generateFile(data: List<T>, batchSize: Int? = null): ByteArrayInputStream {
