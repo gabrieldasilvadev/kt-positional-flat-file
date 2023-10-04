@@ -1,6 +1,6 @@
 package enums
 
-enum class PaddingAlign {
+enum class PadAlign {
     START,
     END,
 }
